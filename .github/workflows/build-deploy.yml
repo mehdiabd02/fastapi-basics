@@ -4,7 +4,7 @@ on:
     branches:
       - main
 jobs:
-  job1:
+  build:
     environment: testing
     env:
       DATABASE_USER: ${{ secrets.DATABASE_USER }}
@@ -81,6 +81,34 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi:latest
 
-
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to production server (SSH)
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            echo "Logging into Docker Hub on remote"
+            echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+            IMAGE=${{ secrets.DOCKER_HUB_USERNAME }}/fastapi:latest
+            echo "Pulling image: $IMAGE"
+            docker pull "$IMAGE"
+            echo "Stopping existing container (if any)"
+            docker stop fastapi || true
+            docker rm fastapi || true
+            echo "Starting container"
+            docker run -d --name fastapi -p 80:8000 --restart unless-stopped \
+              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              -e SECRET_KEY="${{ secrets.SECRET_KEY }}" \
+              -e ACCESS_TOKEN_EXPIRE_MINUTES="${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" \
+              -e ALGORITHM="${{ secrets.ALGORITHM }}" \
+              "$IMAGE"
     
       
