@@ -12,7 +12,8 @@ jobs:
       DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
       DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
       DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # Use the Postgres service started by this job (append _test to DB name)
+      DATABASE_URL: postgresql+psycopg2://postgres:${{ secrets.DATABASE_PASSWORD }}@localhost:5432/${{ secrets.DATABASE_NAME }}_test
       secret_key: ${{ secrets.SECRET_KEY }}
       access_token_expire_minutes: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
       algorithm: ${{ secrets.ALGORITHM }}
