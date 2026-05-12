@@ -105,7 +105,7 @@ jobs:
             docker stop fastapi || true
             docker rm fastapi || true
             echo "Starting container"
-            docker run -d --name fastapi -p 80:8000 --restart unless-stopped \
+            docker run -d --name fastapi -p ${{ secrets.APP_PORT || 8000 }}:8000 --restart unless-stopped \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e SECRET_KEY="${{ secrets.SECRET_KEY }}" \
               -e ACCESS_TOKEN_EXPIRE_MINUTES="${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" \
