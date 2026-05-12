@@ -6,7 +6,12 @@ from .routers import post, user, auth, votes
 from .config import settings
 from fastapi.middleware.cors import CORSMiddleware
 
-models.Base.metadata.create_all(bind=engine)
+try:
+    models.Base.metadata.create_all(bind=engine)
+except Exception:
+    # In CI or when the database isn't ready at import time, skip creating tables here.
+    # Tests create/drop tables in fixtures and production should use migrations.
+    pass
 
 
 app = FastAPI()
