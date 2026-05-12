@@ -83,6 +83,7 @@ jobs:
 
   deploy:
     needs: build
+    environment: testing
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
@@ -92,7 +93,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             set -e
             echo "Logging into Docker Hub on remote"
