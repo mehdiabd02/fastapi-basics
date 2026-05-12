@@ -5,6 +5,17 @@ on:
       - main
 jobs:
   job1:
+    env:
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgresql
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_NAME: fastapi
+      DATABASE_URL: postgresql+psycopg2://postgres:postgresql@localhost:5432/fastapi
+      secret_key: 4lLC5oYOZWnSRlY6jzGwuE9qInKLu1ipqRN7hNI1Jtc
+      access_token_expire_minutes: 300
+      algorithm: HS256
+      ALLOWED_ORIGINS: '["*"]'
     runs-on: ubuntu-latest
     steps:
       - name: pulling git repository
