@@ -6,12 +6,16 @@ from sqlalchemy.orm import sessionmaker
 from app.oauth2 import create_access_token
 from app import models
 import pytest
+import os
 
 from app.database import Base, get_db
 from app.main import app
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgresql@localhost:5432/test_db"
+SQLALCHEMY_DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://postgres:postgresql@localhost:5432/test_db",
+)
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
